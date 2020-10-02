@@ -5,6 +5,7 @@ import random
 import string
 import datetime
 import time
+import json
 
 app = Flask(__name__)
 
@@ -21,26 +22,18 @@ def confirm():
             conn = sqlite3.connect(dbname, isolation_level='EXCLUSIVE')
             cur = conn.cursor()
 
-            # 指定して時間分引いてそれ以下の古いリザーブを削除する
             limit_time = 60 * 60
             unix_time = time.time()
             old_time = unix_time - limit_time
             cur.execute('DELETE FROM reserve WHERE r_time < ?', (old_time, ))
 
-            # widに紐付けられたtidを取得 取れない場合ももちろんある。
             result = request.form
             wid = result['id']
             cur.execute('SELECT tid FROM reserve WHERE wid = ?', (wid, ))
             tid = cur.fetchone()
-            tid = tid[0]
-            print('tid', tid)
-            
-            # workとトランザクションが起きる??
 
-            # まだ完全にテストはできてない
-            if tid == None:
-                # tidを取得する reserveにそのtidを登録
-                # 重複なしかつ回数が少ないものからLIMIT個取得 まだ触ってないtidをこれで取得
+            if tid == None: # wid is not in the reserve table
+                """
                 df = pd.read_sql('SELECT task.tid FROM task, \
                                  (SELECT tid, COUNT(*) c FROM work GROUP BY tid) agg_w, \
                                  (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r \
@@ -48,20 +41,27 @@ def confirm():
                                   AND task.tid = agg_r.tid \
                                   ORDER BY agg_w.c + agg_r.c \
                                   LIMIT 1', conn)
+                """
+                df = pd.read_sql('SELECT task.tid, \
+                                  CASE WHEN agg_w.c IS NULL THEN 0 ELSE agg_w.c END AS wc, \
+                                  CASE WHEN agg_r.c IS NULL THEN 0 ELSE agg_r.c END AS rc \
+                                  FROM task LEFT JOIN \
+                                 (SELECT tid, COUNT(*) c FROM work GROUP BY tid) agg_w \
+                                  ON task.tid = agg_w.tid LEFT JOIN \
+                                 (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r \
+                                  ON task.tid = agg_r.tid ORDER BY wc + rc LIMIT 1', conn)
+                # if reserve and work are empty
+                print('df_inthe_if:', df)
+                # data_length is 0
                 tid = df['tid'][0]
                 cur.execute('INSERT INTO reserve VALUES(?, ?, ?)', (wid, tid, unix_time))
             else:
+                tid = tid[0]
                 cur.execute('UPDATE reserve SET r_time = ? WHERE tid = ? AND wid = ?',
                             (unix_time, tid, wid))
 
-            """ transaction_テスト
-            time.sleep(10)
-            cur.execute("INSERT INTO work VALUES (?, ?, ?, ?, ?)", (None, 0, 0, 0, 1))
-            """
-
-            # task tableからjson取り出しで、renderに渡す情報の準備を
-            # tidから引っ張ってくる select task_info from task where tid == ?(tid)
-            # 後はjsonから値取り出し作業を行うだけ
+            # TODO To get json of taskinfo by table. next, its send a taskinfo to render
+            # select task_info from task where tid == ?(tid)
             
         except Exception as e:
             conn.rollback()
