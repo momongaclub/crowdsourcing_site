@@ -1,0 +1,9 @@
+CREATE TABLE task(tid text PRIMARY KEY, task_info text);
+
+
+
+CREATE TABLE work(wid text, tid text, result_info text, s_time text, e_time text, PRIMARY KEY(wid, tid));
+
+
+
+CREATE TABLE reserve(wid, tid, r_time, PRIMARY KEY(wid, tid));

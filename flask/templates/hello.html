@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>一覧</h3>
+<p>ワーカIDを入力して下さい</p>
+  <form action = "/crowdUrl/input_form" method = "POST">
+    <input type="text" name="id">
+    <input type="submit" value="決定">
+  </form>
+<ul>
+{% for member in members %}
+    <li>{{ member.name}} : {{ member.email }}</li>
+{% endfor %}
+</ul>
+{% endblock %}
