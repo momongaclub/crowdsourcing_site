@@ -33,15 +33,6 @@ def confirm():
             tid = cur.fetchone()
 
             if tid == None: # wid is not in the reserve table
-                """
-                df = pd.read_sql('SELECT task.tid FROM task, \
-                                 (SELECT tid, COUNT(*) c FROM work GROUP BY tid) agg_w, \
-                                 (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r \
-                                  WHERE task.tid = agg_w.tid \
-                                  AND task.tid = agg_r.tid \
-                                  ORDER BY agg_w.c + agg_r.c \
-                                  LIMIT 1', conn)
-                """
                 df = pd.read_sql('SELECT task.tid, \
                                   CASE WHEN agg_w.c IS NULL THEN 0 ELSE agg_w.c END AS wc, \
                                   CASE WHEN agg_r.c IS NULL THEN 0 ELSE agg_r.c END AS rc \
@@ -50,15 +41,26 @@ def confirm():
                                   ON task.tid = agg_w.tid LEFT JOIN \
                                  (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r \
                                   ON task.tid = agg_r.tid ORDER BY wc + rc LIMIT 1', conn)
-                # if reserve and work are empty
-                print('df_inthe_if:', df)
-                # data_length is 0
                 tid = df['tid'][0]
                 cur.execute('INSERT INTO reserve VALUES(?, ?, ?)', (wid, tid, unix_time))
             else:
                 tid = tid[0]
                 cur.execute('UPDATE reserve SET r_time = ? WHERE tid = ? AND wid = ?',
                             (unix_time, tid, wid))
+            cur.execute('SELECT task.task_info FROM task WHERE task.tid = ?', (tid, ))
+            task_info = cur.fetchone()
+            print('task_info_fetchone', task_info)
+
+            # print(pd.read_json(task_info[0].replace("'", '"')))
+
+            task_info = '"' + task_info[0] + '"'
+            # task_info = "'" + task_info[0] + "'"
+            print('task_info', task_info)
+            print('task_info_json_type', type(json.loads(task_info)))
+            task_info_json = json.loads(task_info)
+            print('task_info_json', type(task_info))
+            # print(task_info_json['e_time'])
+            # s_url, e_url, s_t, e_t, movie_min
 
             # TODO To get json of taskinfo by table. next, its send a taskinfo to render
             # select task_info from task where tid == ?(tid)
@@ -70,9 +72,9 @@ def confirm():
             conn.commit()
             cur.close()
             conn.close()
-        return render_template("confirm.html", result=result)
+        # return render_template("confirm.html", result=result)
         # return render_template("confirm.html", tid=tid, wid=wid)
-        # return render_template("confirm.html", result=result, url=url, s_time=s_time, e_time=e_time)
+        return render_template("confirm.html", result=result, url=task_info_json['s_url'], s_time=task_info_json['s_t'], e_time=task_info_json['e_t'])
 
 @app.route('/result', methods = ['POST', 'GET'])
 def result():
