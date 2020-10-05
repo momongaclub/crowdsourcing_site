@@ -58,21 +58,14 @@ def main():
         data.append(url)
 
     df = pd.DataFrame(data, columns=['s_url', 'e_url', 's_t', 'e_t', 'movie_min'])
-    print(df.to_json())
-    pprint.pprint(json.loads(df.to_json(orient='records')), width=40)
-    json_fname = 'urls.json'
-    df.to_json(json_fname ,orient='records')
-    sys.exit()
-
-    dbname = 'RAP_URLS.db'
-    conn = sqlite3.connect(dbname)
-    cur = conn.cursor()
-    df.to_sql('corpus', conn, if_exists='replace')
-    select_sql = 'SELECT * FROM corpus'
-    for row in cur.execute(select_sql):
-        print(row)
-    cur.close()
-    conn.close()
+    result = df.to_json(orient='records')
+    parsed = json.loads(result)
+    json_fname = 'umb_urls.json'
+    with open(json_fname, 'w') as fp:
+        json.dump(parsed, fp, indent=4)
+        # json.dumps(parsed, indent=4)
+    # pprint.pprint(json.loads(df.to_json(orient='records')), width=40)
+    #df.to_json(json_fname ,orient='records')
 
 
 if __name__ == '__main__':

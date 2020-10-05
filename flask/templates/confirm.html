@@ -14,6 +14,8 @@
       <p>終了時間：{{ e_time }}</p>
     <p>以下に文字起こしをお願いします。</p>
     <form action = "/crowdUrl/result" method = "POST">
+      <input type="hidden" name="task_id" value="{{ task_id }}">
+      <input type="hidden" name="worker_id" value="{{ worker_id }}">
       <input type="hidden" name="url" value="{{ url }}">
       <textarea name ="verses" rows="32" placeholder="俺めっちゃジャンケン弱ぇ　何回やったって先攻っていうそれが宿命　でもどんな逆境からでも必ずひっくり返して今もここに立ってるぜ　決勝まで上がってきて二者満塁　ツーアウト　スリーさん、いやもう　三振するギリギリで最後に一発　大きいのブチ返してお前を場外まで飛ばすぜ
 

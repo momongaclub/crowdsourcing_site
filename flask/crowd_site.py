@@ -47,24 +47,12 @@ def confirm():
                 tid = tid[0]
                 cur.execute('UPDATE reserve SET r_time = ? WHERE tid = ? AND wid = ?',
                             (unix_time, tid, wid))
+
             cur.execute('SELECT task.task_info FROM task WHERE task.tid = ?', (tid, ))
             task_info = cur.fetchone()
-            print('task_info_fetchone', task_info)
-
-            # print(pd.read_json(task_info[0].replace("'", '"')))
-
-            task_info = '"' + task_info[0] + '"'
-            # task_info = "'" + task_info[0] + "'"
-            print('task_info', task_info)
-            print('task_info_json_type', type(json.loads(task_info)))
+            task_info = task_info[0]
             task_info_json = json.loads(task_info)
-            print('task_info_json', type(task_info))
-            # print(task_info_json['e_time'])
-            # s_url, e_url, s_t, e_t, movie_min
 
-            # TODO To get json of taskinfo by table. next, its send a taskinfo to render
-            # select task_info from task where tid == ?(tid)
-            
         except Exception as e:
             conn.rollback()
             raise e
@@ -74,29 +62,24 @@ def confirm():
             conn.close()
         # return render_template("confirm.html", result=result)
         # return render_template("confirm.html", tid=tid, wid=wid)
-        return render_template("confirm.html", result=result, url=task_info_json['s_url'], s_time=task_info_json['s_t'], e_time=task_info_json['e_t'])
+        # return render_template("confirm.html", result=result, url=task_info_json['s_url'], s_time=task_info_json['s_t'], e_time=task_info_json['e_t'])
+        return render_template("confirm.html", result=result, url=task_info_json['s_url'], s_time=task_info_json['s_t'], e_time=task_info_json['e_t'], worker_id=wid, task_id=tid)
 
 @app.route('/result', methods = ['POST', 'GET'])
 def result():
     if request.method == 'POST':
         result = request.form
-        print('result_form', result)
-        verses = result['verses']
-        url = result['url']
-        if len(verses) <= 10:
-            print('min_sentence')
-            return render_template("result.html", result=result, url=url)
-        data = (None, url, verses)
-        dbname = "./database/RAP_CORPUS.db"
+        data = (result['worker_id'], result['task_id'], result['verses'], 'null', 'null')
+        dbname = "./database/rap.db"
         conn = sqlite3.connect(dbname)
         cur = conn.cursor()
-        cur.execute("INSERT INTO corpus VALUES (?, ?, ?)", data)
+        cur.execute("INSERT INTO work VALUES (?, ?, ?, ?, ?)", data)
         conn.commit()
         cur.close()
         conn.close()
         random_id = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
         rancers_key = 'iM'+random_id+'aB'
-        return render_template("result.html", result=result, url=url, rancers_key=rancers_key)
+        return render_template("result.html", result=result, url=result['url'], rancers_key=rancers_key)
 
 
 if __name__ == "__main__":
