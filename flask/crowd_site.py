@@ -38,6 +38,7 @@ def input_form():
 
             if tid is None:
                 # wid is not in the reserve table
+                """
                 df = pd.read_sql('SELECT task.tid, \
                                   CASE WHEN agg_w.c IS NULL THEN 0 \
                                   ELSE agg_w.c END AS wc, \
@@ -51,6 +52,18 @@ def input_form():
                                   GROUP BY tid) agg_r \
                                   ON task.tid = agg_r.tid ORDER BY wc + rc \
                                   LIMIT 1', conn)
+                WHERE task.tid != (select tid from work where work.wid = " + wid + "" "mina_nagai") \
+                """
+
+                df = pd.read_sql('SELECT task.tid, CASE WHEN agg_w.c IS NULL THEN 0 \
+ELSE agg_w.c END AS wc, CASE WHEN agg_r.c IS NULL THEN 0 \
+ELSE agg_r.c END AS rc, \
+CASE WHEN work_ex.wid IS NULL THEN 0 ELSE work_ex.wid END AS wid_ex \
+FROM task LEFT JOIN (SELECT tid, COUNT(*) c FROM work GROUP BY tid) agg_w ON task.tid = agg_w.tid LEFT JOIN (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r ON task.tid = agg_r.tid \
+LEFT JOIN (SELECT tid, wid FROM work) work_ex ON task.tid = work_ex.tid \
+WHERE task.tid != (select tid from work where work.wid = "' + wid + '") \
+GROUP BY task.tid \
+ORDER BY wc + rc LIMIT 1', conn)
                 tid = df['tid'][0]
                 cur.execute('INSERT INTO reserve VALUES(?, ?, ?)', (wid, tid, unix_time))
             else:
@@ -85,6 +98,8 @@ def result():
         r_time = cur.fetchone()[0]
         task_time = int(time.time() - r_time)
         cur.execute('INSERT INTO work VALUES (?, ?, ?, ?, ?)', data)
+        # After registration, delete data from reserve
+        cur.execute('DELETE FROM reserve WHERE tid = ? AND wid = ?', (result['task_id'], result['worker_id'] ))
         conn.commit()
         cur.close()
         conn.close()
