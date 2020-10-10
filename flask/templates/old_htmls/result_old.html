@@ -1,0 +1,15 @@
+<html>
+   <body>
+    <p>入力内容</p>
+    <p>ありがとうございました。以下のコード及び文字起こしデータ(versesの右欄)をランサーズに入力し終了となります。</p>
+      <table border = 1>
+         {% for key, value in result.items() %}
+            <tr>
+               <th> {{ key }} </th>
+               <td> {{ value }} </td>
+            </tr>
+         {% endfor %}
+      </table>
+    <p>コード：{{ rancers_key }}</p>
+   </body>
+</html>

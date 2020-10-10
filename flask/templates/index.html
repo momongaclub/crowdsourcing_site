@@ -31,45 +31,18 @@
    </header>
 
   <!-- Intro -->
-   <section id="one" class="main style1 dark fullscreen">
+   <section id="intro" class="main style1 dark fullscreen">
     <div class="content">
      <header>
-      <h2>ありがとうございました</h2>
+      <h2>Rap battle 文字起こし</h2>
+      <h2>タスクへようこそ</h2>
      </header>
 
-
-    <p>以下のコードをランサーズに入力し終了となります。</p>
-    <!--
-      <table border = 1>
-         {% for key, value in result.items() %}
-            <tr>
-               <th> {{ key }} </th>
-               <td> {{ value }} </td>
-            </tr>
-         {% endfor %}
-      </table>
-      -->
-        <!-- コピー対象要素とコピーボタン -->
-    <input id="copyTarget" type="text" value="{{ rancers_key }}" readonly>
-    <button onclick="copyToClipboard()">Copy code</button>
-
-    <!-- bodyタグ内の下部に以下を入力する -->
-    <script>
-        function copyToClipboard() {
-            // コピー対象をJavaScript上で変数として定義する
-            var copyTarget = document.getElementById("copyTarget");
-
-            // コピー対象のテキストを選択する
-            copyTarget.select();
-
-            // 選択しているテキストをクリップボードにコピーする
-            document.execCommand("Copy");
-
-            // コピーをお知らせする
-            alert("copy completed : " + copyTarget.value);
-        }
-    </script>
-
+      <p><strong>ランサーズIDを入力して下さい</strong></p>
+        <form action = "/crowdUrl/input_form" method = "POST">
+        <input type="text" name="id" placeholder="(例) lancers_id"><br>
+        <input type="submit" value="決定">
+        </form>
 <!--
      <footer>
       <a href="#one" class="button style2 down">More</a>
@@ -111,7 +84,8 @@
       Fusce blandit ultrices sapien, in accumsan orci rhoncus eu. Sed sodales venenatis
       arcu, id varius justo euismod in. Curabitur egestas consectetur magna vitae.</p>
      </header>
-
+-->
+<!--
       <div class="gallery">
        <article class="from-left">
         <a href="images/fulls/01.jpg" class="image fit"><img src="images/thumbs/kurage.jpg" title="The Anonymous Red" alt="" /></a>
@@ -135,6 +109,7 @@
 
     </div>
    </section>
+
 
    <section id="contact" class="main style3 secondary">
     <div class="content">

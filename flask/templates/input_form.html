@@ -34,41 +34,34 @@
    <section id="one" class="main style1 dark fullscreen">
     <div class="content">
      <header>
-      <h2>ありがとうございました</h2>
+      <h2>文字起こしフォーム</h2>
      </header>
 
+    <p>{{ worker_id }}様が作業して頂く動画はこちらになります</p>
+    <input type="button" name="buttonName" id="buttonName" value="ラップバトル動画" onClick="window.open('{{ url }}','_blank')" /><br>
+      <br>
+      <p>動画内の作業開始時間,終了時間</p>
+      <p>開始時間：{{ s_time }}, 終了時間：{{ e_time }}</p>
 
-    <p>以下のコードをランサーズに入力し終了となります。</p>
-    <!--
-      <table border = 1>
-         {% for key, value in result.items() %}
-            <tr>
-               <th> {{ key }} </th>
-               <td> {{ value }} </td>
-            </tr>
-         {% endfor %}
-      </table>
-      -->
-        <!-- コピー対象要素とコピーボタン -->
-    <input id="copyTarget" type="text" value="{{ rancers_key }}" readonly>
-    <button onclick="copyToClipboard()">Copy code</button>
+<!--
+    <p style="display:inline;">・司会者が発する「readyFight!!や、そこまで〜！」といったセリフは必要ありません。あくまで2人のラッパーが発する音声の文字起こしになります。
+・語尾の伸ばしは省略してください（だりぃ〜→だりぃ）
+・噛んだりした箇所であっても補完できる場合補完して下さい（だから言っつぇんだろ→だから言ってんだろ）
+・もし、文脈から当てはまる漢字が一意に決まらない場合はひらがなで構いません。（つまり大事なのはいかり→怒り、碇どっちなのかわからないと言った場合）
+・効果音などはテキストに入力する必要はありません。
+・作業を完了する前に、必ずテキストの内容を見て誤字脱字が無いか確認してください。
+※コメント欄に文字起こしがすでに存在する場合もあるので、そちらを参考にしていただいても構いません。（コピペはやめて下さい）</p>
+-->
+    <p>以下に文字起こしをお願いします。</p>
+    <form action = "/crowdUrl/result" method = "POST">
+      <input type="hidden" name="task_id" value="{{ task_id }}">
+      <input type="hidden" name="worker_id" value="{{ worker_id }}">
+      <input type="hidden" name="url" value="{{ url }}">
+      <textarea name ="verses" rows="32" placeholder="(例)俺めっちゃジャンケン弱ぇ　何回やったって先攻っていうそれが宿命　でもどんな逆境からでも必ずひっくり返して今もここに立ってるぜ　決勝まで上がってきて二者満塁　ツーアウト　スリーさん、いやもう　三振するギリギリで最後に一発　大きいのブチ返してお前を場外まで飛ばすぜ
 
-    <!-- bodyタグ内の下部に以下を入力する -->
-    <script>
-        function copyToClipboard() {
-            // コピー対象をJavaScript上で変数として定義する
-            var copyTarget = document.getElementById("copyTarget");
-
-            // コピー対象のテキストを選択する
-            copyTarget.select();
-
-            // 選択しているテキストをクリップボードにコピーする
-            document.execCommand("Copy");
-
-            // コピーをお知らせする
-            alert("copy completed : " + copyTarget.value);
-        }
-    </script>
+二代目から三代目にモンスター変わって　あんたほとんど先攻で相変わらずやってんじゃねーの？　俺降ろされたから　後攻取らせてよ　俺降ろされたから　後攻でやらせてよ　クソ単純でしょ　それでも勝つのがあんたじゃない？三代目なんじゃないの？　強いんだろ？　強いよ　知ってるよ　強いよ　強いよ"></textarea>
+      <input type="submit" value="決定">
+    </form>
 
 <!--
      <footer>
