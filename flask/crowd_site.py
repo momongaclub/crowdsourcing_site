@@ -62,8 +62,10 @@ CASE WHEN work_ex.wid IS NULL THEN 0 ELSE work_ex.wid END AS wid_ex \
 FROM task LEFT JOIN (SELECT tid, COUNT(*) c FROM work GROUP BY tid) agg_w ON task.tid = agg_w.tid LEFT JOIN (SELECT tid, COUNT(*) c FROM reserve GROUP BY tid) agg_r ON task.tid = agg_r.tid \
 LEFT JOIN (SELECT tid, wid FROM work) work_ex ON task.tid = work_ex.tid \
 WHERE task.tid != (select tid from work where work.wid = "' + wid + '") \
+OR task.tid NOT IN (SELECT tid FROM work WHERE work.wid = "' + wid + '") \
 GROUP BY task.tid \
 ORDER BY wc + rc LIMIT 1', conn)
+                print('tid:', df['tid'])
                 tid = df['tid'][0]
                 cur.execute('INSERT INTO reserve VALUES(?, ?, ?)', (wid, tid, unix_time))
             else:

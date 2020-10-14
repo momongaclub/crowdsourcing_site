@@ -29,6 +29,11 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;}
 
+::placeholder {
+  color: blue;
+  font-size: 1.5em;
+}
+
 body {
 	line-height: 1;
 }

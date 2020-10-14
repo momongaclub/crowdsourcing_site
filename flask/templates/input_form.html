@@ -37,7 +37,7 @@
       <h2>文字起こしフォーム</h2>
      </header>
 
-    <p>{{ worker_id }}様が作業して頂く動画はこちらになります</p>
+    <p>{{ worker_id }}様に作業して頂く動画はこちらになります</p>
     <input type="button" name="buttonName" id="buttonName" value="ラップバトル動画" onClick="window.open('{{ url }}','_blank')" /><br>
       <br>
       <p>動画内の作業開始時間,終了時間</p>
@@ -52,7 +52,7 @@
 ・作業を完了する前に、必ずテキストの内容を見て誤字脱字が無いか確認してください。
 ※コメント欄に文字起こしがすでに存在する場合もあるので、そちらを参考にしていただいても構いません。（コピペはやめて下さい）</p>
 -->
-    <p>以下に文字起こしをお願いします。</p>
+    <p>以下に文字起こししたテキストを入力して下さい。</p>
     <form action = "/crowdUrl/result" method = "POST">
       <input type="hidden" name="task_id" value="{{ task_id }}">
       <input type="hidden" name="worker_id" value="{{ worker_id }}">
